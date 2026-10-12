@@ -74,6 +74,20 @@ footer{padding:24px 0;color:var(--mute);font-size:.9rem}
 .tile small{font-weight:600;opacity:.85}
 .tile:hover .play{transform:scale(1.1)}
 .tile[hidden]{display:none}
+.cform{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:760px;margin-top:32px}
+.cform label{display:grid;gap:6px;font-weight:600;font-size:.95rem}
+.cform .full{grid-column:1/-1}
+.cform input,.cform select,.cform textarea{font:400 1rem Figtree,sans-serif;color:var(--ink);background:var(--bg);border:2px solid transparent;border-radius:6px;padding:12px 14px;width:100%}
+.cform textarea{min-height:140px;resize:vertical}
+.cform input:focus-visible,.cform select:focus-visible,.cform textarea:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.cform .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.cform button{font:600 1rem Figtree,sans-serif;border:0;cursor:pointer;margin-top:4px;justify-self:start}
+.cform button[disabled]{opacity:.6;cursor:wait}
+.cform .note{grid-column:1/-1;margin:0;min-height:1.6em;font-weight:600}
+.cform .note.err{color:#FF8A7A}
+.contact .alt{margin:20px 0 0;color:var(--line)}
+.contact .alt a{color:var(--acc)}
+@media (max-width:760px){.cform{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -103,9 +117,28 @@ footer{padding:24px 0;color:var(--mute);font-size:.9rem}
 <div class="grid"><a class="tile  " data-cat="film" href="https://drive.google.com/file/d/1aUel64qgRCK1MkJuiI-iAvJ4pSbfDrpU/view" target="_blank" rel="noopener"><span class="play"></span><small>Brand film</small><h3>Brand film</h3></a><a class="tile b " data-cat="event" href="https://drive.google.com/file/d/1_NkvGOU990YId1OZ5enVp0liA9dp_Jfq/view" target="_blank" rel="noopener"><span class="play"></span><small>Event coverage</small><h3>DJ night highlight reel</h3></a><a class="tile c tall" data-cat="social" href="https://drive.google.com/file/d/1NGngszJD6vOvHj4_CpVXQbg7YhnVwIQ2/view" target="_blank" rel="noopener"><span class="play"></span><small>Social cut</small><h3>Verticals for Reels and TikTok</h3></a><a class="tile b " data-cat="artist" href="https://drive.google.com/file/d/1yK5peA8_mXmm06SCKrzXAWi2buI6kLNa/view" target="_blank" rel="noopener"><span class="play"></span><small>Artist visual</small><h3>Chode X performance visual</h3></a><a class="tile c " data-cat="film" href="https://drive.google.com/file/d/1iwDRqyoLtzWOEbfU0Xigef_6Jx5CCjtF/view" target="_blank" rel="noopener"><span class="play"></span><small>Brand film</small><h3>Product reveal</h3></a><a class="tile  " data-cat="event" href="https://drive.google.com/file/d/1KgsRqthoQ2VZt_L2ZndA5f5E4TaeqqWp/view" target="_blank" rel="noopener"><span class="play"></span><small>Event coverage</small><h3>Live show aftermovie</h3></a><a class="tile  tall" data-cat="social" href="https://drive.google.com/file/d/1gE_sd7MqbjtxYfYLMcuwC0BeyLHm4QsU/view" target="_blank" rel="noopener"><span class="play"></span><small>Social cut</small><h3>Campaign teaser</h3></a></div>
 </div></section>
 <script>
+(function(){
+var grid=document.querySelector('.grid');
+function current(){var b=document.querySelector('.filters button[aria-pressed="true"]');return b?b.dataset.f:'all'}
+function apply(f){document.querySelectorAll('.tile').forEach(function(t){t.hidden=f!=='all'&&t.dataset.cat!==f})}
 document.querySelectorAll('.filters button').forEach(function(b){b.addEventListener('click',function(){
 document.querySelectorAll('.filters button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});
-document.querySelectorAll('.tile').forEach(function(t){t.hidden=b.dataset.f!=='all'&&t.dataset.cat!==b.dataset.f});})});
+apply(b.dataset.f);})});
+// Load the reel from the database; the tiles above stay as a fallback if this fails
+fetch('/api/reel').then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(items){
+if(!Array.isArray(items)||!items.length)return;
+var frag=document.createDocumentFragment();
+items.forEach(function(it){
+if(!/^https?:\/\//.test(it.videoUrl))return;
+var a=document.createElement('a');a.className=('tile '+(it.layout||'')).trim();a.dataset.cat=it.category;
+a.href=it.videoUrl;a.target='_blank';a.rel='noopener';
+var p=document.createElement('span');p.className='play';
+var sm=document.createElement('small');sm.textContent=it.label||'';
+var h=document.createElement('h3');h.textContent=it.title;
+a.append(p,sm,h);frag.appendChild(a);});
+if(!frag.childNodes.length)return;
+grid.replaceChildren(frag);apply(current());}).catch(function(){});
+})();
 </script>
 
 <section id="work"><div class="wrap">
@@ -138,7 +171,35 @@ document.querySelectorAll('.tile').forEach(function(t){t.hidden=b.dataset.f!=='a
 
 <section class="contact" id="contact"><div class="wrap">
 <h2>Have a brand that needs to be seen?</h2>
-<a class="btn" href="mailto:davetrellz@gmail.com">Email Fetty</a>
+<form class="cform" id="cform" novalidate>
+<label>Name<input name="name" autocomplete="name" required maxlength="120"></label>
+<label>Email<input name="email" type="email" autocomplete="email" required maxlength="200"></label>
+<label>Company or brand<input name="company" autocomplete="organization" maxlength="200"></label>
+<label>What do you need?<select name="service"><option value="">Choose one</option><option value="advertising">Advertising and campaign concepts</option><option value="production">Campaign production</option><option value="strategy">Digital strategy</option><option value="other">Something else</option></select></label>
+<label class="full">Budget (optional)<input name="budget" maxlength="60" placeholder="e.g. ₦500k to ₦2m"></label>
+<label class="full">Tell me about the project<textarea name="message" required maxlength="5000"></textarea></label>
+<label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+<button class="btn" type="submit">Send enquiry</button>
+<p class="note" role="status" aria-live="polite"></p>
+</form>
+<p class="alt">Prefer email? <a href="mailto:davetrellz@gmail.com">davetrellz@gmail.com</a></p>
+<script>
+(function(){
+var f=document.getElementById('cform'),note=f.querySelector('.note'),btn=f.querySelector('button');
+f.addEventListener('submit',function(e){
+e.preventDefault();note.className='note';
+var d=Object.fromEntries(new FormData(f));
+if(!d.name.trim()||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email.trim())||!d.message.trim()){
+note.className='note err';note.textContent='Please add your name, a valid email and a message.';return;}
+btn.disabled=true;btn.textContent='Sending…';
+fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)})
+.then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.error||'');return j})})
+.then(function(){f.reset();note.textContent='Thanks, your enquiry is in. Fetty will get back to you soon.';})
+.catch(function(err){note.className='note err';note.textContent=err.message||'Something went wrong. Please email instead.';})
+.finally(function(){btn.disabled=false;btn.textContent='Send enquiry';});
+});
+})();
+</script>
 </div></section>
 </main>
 <footer><div class="wrap">Fetty | FettyEffect | Lagos, Nigeria</div></footer>

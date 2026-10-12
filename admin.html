@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin | Fetty</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FAFAF7;--ink:#10202A;--mute:#4E5D66;--line:#D5DBDD;--acc:#FFC21A;--lag:#0E5C63;--panel:#EEF1F0}
+@media (prefers-color-scheme:dark){:root{--bg:#0C171D;--ink:#F2F4F3;--mute:#A5B2B8;--line:#26363E;--lag:#4FB3BB;--panel:#132229}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 Figtree,system-ui,sans-serif}
+h1,h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;letter-spacing:-.02em;margin:0 0 12px}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 24px}
+header{background:var(--acc);color:#10202A}
+header .wrap{display:flex;justify-content:space-between;align-items:center;padding:20px 24px}
+header h1{margin:0;font-size:1.6rem}
+button,input,select,textarea{font:inherit;color:inherit}
+input,select,textarea{background:var(--bg);border:2px solid var(--line);border-radius:6px;padding:9px 12px;width:100%}
+button{background:var(--ink);color:var(--bg);border:0;border-radius:999px;padding:9px 18px;font-weight:600;cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+button.danger{background:transparent;color:#C0392B;border:2px solid #C0392B}
+header button{background:#10202A;color:#FAFAF7}
+.tabs{display:flex;gap:8px;margin-bottom:24px}
+.tabs button[aria-pressed="false"]{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.card{border:1px solid var(--line);border-radius:8px;padding:18px;margin-bottom:14px;background:var(--panel)}
+.meta{color:var(--mute);font-size:.9rem;display:flex;flex-wrap:wrap;gap:6px 16px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.row select{width:auto}
+.msg{white-space:pre-wrap;margin:10px 0 0}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.8rem;font-weight:600;background:var(--line)}
+.badge.new{background:var(--acc);color:#10202A}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
+.form label{display:grid;gap:4px;font-weight:600;font-size:.9rem}
+.form .full{grid-column:1/-1}
+.login{max-width:380px;margin:12vh auto;display:grid;gap:12px}
+.err{color:#C0392B;font-weight:600;min-height:1.5em;margin:0}
+.empty{color:var(--mute)}
+[hidden]{display:none!important}
+@media (max-width:640px){.form{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<form class="login wrap" id="login">
+<h1>Admin</h1>
+<label>Password<input type="password" id="pw" autocomplete="current-password" required></label>
+<button type="submit">Sign in</button>
+<p class="err" id="loginErr" role="alert"></p>
+</form>
+
+<div id="app" hidden>
+<header><div class="wrap"><h1>Fetty admin</h1><button id="logout">Sign out</button></div></header>
+<div class="wrap">
+<div class="tabs" role="group" aria-label="Section"><button aria-pressed="true" data-tab="inq">Enquiries</button><button aria-pressed="false" data-tab="reel">Reel</button></div>
+<p class="err" id="err" role="alert"></p>
+
+<section id="inq">
+<div class="row" style="margin:0 0 16px"><label>Show <select id="filter"><option value="active">New and replied</option><option value="new">New only</option><option value="archived">Archived</option><option value="all">All</option></select></label></div>
+<div id="inqList"></div>
+</section>
+
+<section id="reel" hidden>
+<h2>Add a video</h2>
+<form class="form" id="addReel">
+<label>Title<input name="title" required maxlength="160"></label>
+<label>Category<select name="category" required><option value="film">Brand film</option><option value="event">Event</option><option value="social">Social</option><option value="artist">Artist</option></select></label>
+<label class="full">Video link (Google Drive, YouTube, Vimeo…)<input name="videoUrl" type="url" required placeholder="https://"></label>
+<label>Small label<input name="label" maxlength="60" placeholder="e.g. Brand film"></label>
+<label>Tile style<select name="layout"><option value="">Teal</option><option value="b">Gold</option><option value="c">Slate</option><option value="tall">Teal, tall (vertical video)</option><option value="b tall">Gold, tall</option><option value="c tall">Slate, tall</option></select></label>
+<label>Position (lower shows first)<input name="sortOrder" type="number" value="100"></label>
+<div class="row full"><button type="submit">Add to reel</button></div>
+</form>
+<h2>Current reel</h2>
+<div id="reelList"></div>
+</section>
+</div>
+</div>
+
+<script>
+(function(){
+var pw=sessionStorage.getItem('adminPw')||'';
+var $=function(id){return document.getElementById(id)};
+var inquiries=[];
+
+function api(path,opts){
+opts=opts||{};
+opts.headers=Object.assign({'Authorization':'Bearer '+pw},opts.body?{'Content-Type':'application/json'}:{});
+return fetch('/api/admin/'+path,opts).then(function(r){
+if(r.status===204)return null;
+return r.json().then(function(j){if(!r.ok){var e=new Error(j.error||'Request failed');e.status=r.status;throw e}return j});
+});
+}
+function el(tag,props,kids){var n=document.createElement(tag);Object.assign(n,props||{});(kids||[]).forEach(function(k){n.append(k)});return n}
+function fail(e){if(e.status===401){logout();$('loginErr').textContent='Wrong password.';return}$('err').textContent=e.message}
+
+function showApp(){$('login').hidden=true;$('app').hidden=false;loadInq();loadReel()}
+function logout(){sessionStorage.removeItem('adminPw');pw='';$('app').hidden=true;$('login').hidden=false}
+
+$('login').addEventListener('submit',function(e){
+e.preventDefault();pw=$('pw').value;$('loginErr').textContent='';
+api('inquiries').then(function(rows){sessionStorage.setItem('adminPw',pw);inquiries=rows;$('login').hidden=true;$('app').hidden=false;renderInq();loadReel()})
+.catch(function(e){$('loginErr').textContent=e.status===401?'Wrong password.':e.message});
+});
+$('logout').addEventListener('click',logout);
+
+document.querySelectorAll('.tabs button').forEach(function(b){b.addEventListener('click',function(){
+document.querySelectorAll('.tabs button').forEach(function(x){x.setAttribute('aria-pressed',x===b);$(x.dataset.tab).hidden=x!==b});
+})});
+
+function loadInq(){api('inquiries').then(function(rows){inquiries=rows;renderInq()}).catch(fail)}
+$('filter').addEventListener('change',renderInq);
+function renderInq(){
+var f=$('filter').value;
+var rows=inquiries.filter(function(r){return f==='all'||(f==='active'?r.status!=='archived':r.status===f)});
+var list=$('inqList');list.replaceChildren();
+if(!rows.length){list.append(el('p',{className:'empty',textContent:'No enquiries here yet.'}));return}
+rows.forEach(function(r){
+var status=el('select',{},['new','replied','archived'].map(function(s){return el('option',{value:s,textContent:s,selected:s===r.status})}));
+status.addEventListener('change',function(){api('inquiries/'+r.id,{method:'PATCH',body:JSON.stringify({status:status.value})}).then(function(u){Object.assign(r,u);renderInq()}).catch(fail)});
+var del=el('button',{className:'danger',textContent:'Delete'});
+del.addEventListener('click',function(){if(confirm('Delete this enquiry for good?'))api('inquiries/'+r.id,{method:'DELETE'}).then(loadInq).catch(fail)});
+var mail=el('a',{href:'mailto:'+encodeURIComponent(r.email)+'?subject='+encodeURIComponent('Re: your enquiry'),textContent:r.email});
+var meta=el('div',{className:'meta'},[el('span',{className:'badge '+r.status,textContent:r.status}),mail,new Date(r.createdAt).toLocaleString()]);
+if(r.company)meta.append(el('span',{textContent:r.company}));
+if(r.service)meta.append(el('span',{textContent:'Service: '+r.service}));
+if(r.budget)meta.append(el('span',{textContent:'Budget: '+r.budget}));
+list.append(el('div',{className:'card'},[el('h2',{textContent:r.name,style:'font-size:1.3rem;margin:0 0 6px'}),meta,el('p',{className:'msg',textContent:r.message}),el('div',{className:'row'},[status,del])]));
+});
+}
+
+function loadReel(){api('reel').then(renderReel).catch(fail)}
+function renderReel(rows){
+var list=$('reelList');list.replaceChildren();
+if(!rows.length){list.append(el('p',{className:'empty',textContent:'The reel is empty.'}));return}
+rows.forEach(function(r){
+var toggle=el('button',{className:'ghost',textContent:r.published?'Hide from site':'Show on site'});
+toggle.addEventListener('click',function(){api('reel/'+r.id,{method:'PATCH',body:JSON.stringify({published:!r.published})}).then(loadReel).catch(fail)});
+var order=el('input',{type:'number',value:r.sortOrder,style:'width:90px','aria-label':'Position'});
+order.setAttribute('aria-label','Position');
+order.addEventListener('change',function(){api('reel/'+r.id,{method:'PATCH',body:JSON.stringify({sortOrder:Number(order.value)})}).then(loadReel).catch(fail)});
+var del=el('button',{className:'danger',textContent:'Delete'});
+del.addEventListener('click',function(){if(confirm('Remove "'+r.title+'" from the reel?'))api('reel/'+r.id,{method:'DELETE'}).then(loadReel).catch(fail)});
+var link=el('a',{href:/^https?:\/\//.test(r.videoUrl)?r.videoUrl:'#',target:'_blank',rel:'noopener',textContent:'Open video'});
+list.append(el('div',{className:'card'},[
+el('h2',{textContent:r.title,style:'font-size:1.2rem;margin:0 0 6px'}),
+el('div',{className:'meta'},[el('span',{className:'badge'+(r.published?' new':''),textContent:r.published?'live':'hidden'}),el('span',{textContent:r.category}),r.label?el('span',{textContent:r.label}):'',link]),
+el('div',{className:'row'},['Position ',order,toggle,del])]));
+});
+}
+$('addReel').addEventListener('submit',function(e){
+e.preventDefault();var form=e.target;var d=Object.fromEntries(new FormData(form));
+api('reel',{method:'POST',body:JSON.stringify(d)}).then(function(){form.reset();$('err').textContent='';loadReel()}).catch(fail);
+});
+
+if(pw)showApp();
+})();
+</script>
+</body>
+</html>
