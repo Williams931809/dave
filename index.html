@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fetty | Digital Creative Director, Lagos</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FAFAF7;--ink:#10202A;--mute:#4E5D66;--line:#D5DBDD;--acc:#FFC21A;--acc-ink:#10202A;--lag:#0E5C63;--panel:#EEF1F0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C171D;--ink:#F2F4F3;--mute:#A5B2B8;--line:#26363E;--lag:#4FB3BB;--panel:#132229}}
+:root[data-theme="dark"]{--bg:#0C171D;--ink:#F2F4F3;--mute:#A5B2B8;--line:#26363E;--lag:#4FB3BB;--panel:#132229}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 Figtree,system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque",Impact,sans-serif;font-weight:800;line-height:1;margin:0;letter-spacing:-.02em}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:3px solid var(--lag);outline-offset:3px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:20px 0;font-weight:600}
+nav div{display:flex;gap:22px}
+nav a{text-decoration:none}
+.hero{background:var(--acc);color:var(--acc-ink);padding-bottom:56px}
+.hero .wrap{padding-top:8px}
+.hero nav{color:var(--acc-ink)}
+.hero h1{font-size:clamp(4.5rem,21vw,15rem);margin:28px 0 20px;animation:rise .9s cubic-bezier(.2,.8,.2,1) both}
+.hero p{font-size:clamp(1.15rem,2.6vw,1.6rem);max-width:30ch;line-height:1.3;font-weight:600;margin:0 0 28px}
+.btn{display:inline-block;background:var(--acc-ink);color:#FAFAF7;padding:14px 26px;border-radius:999px;text-decoration:none;font-weight:600}
+@keyframes rise{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.hero h1{animation:none}html{scroll-behavior:auto}}
+section{padding:72px 0;border-bottom:1px solid var(--line)}
+h2{font-size:clamp(2rem,5vw,3.2rem);max-width:18ch;margin-bottom:12px}
+.lede{color:var(--mute);max-width:56ch;margin:0 0 40px}
+.arc{display:grid;gap:0;grid-template-columns:repeat(3,1fr);border:2px solid var(--ink)}
+.arc>div{padding:28px;border-right:2px solid var(--ink)}
+.arc>div:last-child{border-right:0}
+.arc h3{font-size:1.6rem;margin:6px 0 10px}
+.arc small{font-weight:600;color:var(--lag)}
+.arc p{margin:0;color:var(--mute)}
+.work{display:grid;gap:20px}
+.job{display:grid;grid-template-columns:220px 1fr;gap:12px 32px;padding:28px 0;border-top:1px solid var(--line)}
+.job:first-child{border-top:0;padding-top:0}
+.job h3{font-size:1.7rem}
+.job .tag{color:var(--lag);font-weight:600}
+.job p{margin:0 0 10px;max-width:62ch}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chips span{background:var(--panel);border-radius:6px;padding:4px 12px;font-size:.9rem;font-weight:600}
+.roles{list-style:none;margin:0;padding:0}
+.roles li{display:grid;grid-template-columns:220px 1fr;gap:8px 32px;padding:20px 0;border-top:1px solid var(--line)}
+.roles b{font-family:"Bricolage Grotesque",sans-serif;font-size:1.25rem}
+.roles span{color:var(--mute)}
+.skills{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.skills h3{font-size:1.25rem;margin-bottom:10px}
+.skills ul{margin:0;padding-left:18px;color:var(--mute)}
+.contact{background:var(--ink);color:var(--bg);border:0;padding:88px 0}
+.contact h2{max-width:14ch;font-size:clamp(2.4rem,7vw,5rem)}
+.contact .btn{background:var(--acc);color:var(--acc-ink);margin-top:20px}
+footer{padding:24px 0;color:var(--mute);font-size:.9rem}
+@media (max-width:760px){.arc,.skills{grid-template-columns:1fr}.arc>div{border-right:0;border-bottom:2px solid var(--ink)}.arc>div:last-child{border-bottom:0}.job,.roles li{grid-template-columns:1fr}nav div{gap:14px;font-size:.95rem}}
+.reel-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px;margin-bottom:28px}
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.filters button{font:600 .95rem Figtree,sans-serif;background:transparent;color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 18px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.tile{position:relative;display:flex;flex-direction:column;justify-content:flex-end;aspect-ratio:16/9;padding:18px;text-decoration:none;color:#fff;background:linear-gradient(160deg,var(--lag),#0A2A30);border-radius:6px;overflow:hidden}
+.tile.tall{aspect-ratio:9/16;grid-row:span 2}
+.tile.b{background:linear-gradient(160deg,#B58200,#4A3600)}
+.tile.c{background:linear-gradient(160deg,#2A3F4A,#0C171D)}
+.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tile::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 45%,rgba(0,0,0,.75))}
+.tile>*{position:relative;z-index:1}
+.tile .play{position:absolute;top:16px;right:16px;width:44px;height:44px;border-radius:50%;background:var(--acc);display:grid;place-items:center;z-index:1}
+.tile .play::before{content:"";border-left:14px solid var(--acc-ink);border-top:9px solid transparent;border-bottom:9px solid transparent;margin-left:4px}
+.tile h3{font-size:1.25rem;margin-bottom:4px}
+.tile small{font-weight:600;opacity:.85}
+.tile:hover .play{transform:scale(1.1)}
+.tile[hidden]{display:none}
+</style>
+</head>
+<body>
+<header class="hero">
+<div class="wrap">
+<nav><span>FettyEffect</span><div><a href="#reel">Reel</a><a href="#arc">Approach</a><a href="#work">Work</a><a href="#roles">Experience</a><a href="#contact">Contact</a></div></nav>
+<h1>Fetty</h1>
+<p>Digital creative director in Lagos. I take an idea from the pitch to the shoot to the feed, and make it sell.</p>
+<a class="btn" href="#reel">Watch the reel</a>
+</div>
+</header>
+
+<main>
+<section id="arc"><div class="wrap">
+<h2>One idea, three stages of ownership</h2>
+<p class="lede">Most brands split concept, production and distribution across three teams that never meet. I hold all three, so the idea that wins the pitch is the one that ships and performs.</p>
+<div class="arc">
+<div><small>Stage 1</small><h3>Advertising</h3><p>Brand positioning, campaign concepts and scripts rooted in how Lagos actually talks, buys and shares.</p></div>
+<div><small>Stage 2</small><h3>Campaign production</h3><p>Brand films, event coverage and social-first shoots, directed and edited under one roof.</p></div>
+<div><small>Stage 3</small><h3>Digital strategy</h3><p>Content calendars, paid and organic distribution, built for local buyers and international or B2B audiences at once.</p></div>
+</div>
+</div></section>
+
+<section id="reel"><div class="wrap">
+<div class="reel-head"><div><h2>The reel</h2><p class="lede" style="margin:0">Films, event coverage and social cuts. Tap any tile to watch.</p></div>
+<div class="filters" role="group" aria-label="Filter by type"><button aria-pressed="true" data-f="all">All</button><button aria-pressed="false" data-f="film">Brand films</button><button aria-pressed="false" data-f="event">Events</button><button aria-pressed="false" data-f="social">Social</button><button aria-pressed="false" data-f="artist">Artists</button></div></div>
+<div class="grid"><a class="tile  " data-cat="film" href="https://drive.google.com/file/d/1aUel64qgRCK1MkJuiI-iAvJ4pSbfDrpU/view" target="_blank" rel="noopener"><span class="play"></span><small>Brand film</small><h3>Brand film</h3></a><a class="tile b " data-cat="event" href="https://drive.google.com/file/d/1_NkvGOU990YId1OZ5enVp0liA9dp_Jfq/view" target="_blank" rel="noopener"><span class="play"></span><small>Event coverage</small><h3>DJ night highlight reel</h3></a><a class="tile c tall" data-cat="social" href="https://drive.google.com/file/d/1NGngszJD6vOvHj4_CpVXQbg7YhnVwIQ2/view" target="_blank" rel="noopener"><span class="play"></span><small>Social cut</small><h3>Verticals for Reels and TikTok</h3></a><a class="tile b " data-cat="artist" href="https://drive.google.com/file/d/1yK5peA8_mXmm06SCKrzXAWi2buI6kLNa/view" target="_blank" rel="noopener"><span class="play"></span><small>Artist visual</small><h3>Chode X performance visual</h3></a><a class="tile c " data-cat="film" href="https://drive.google.com/file/d/1iwDRqyoLtzWOEbfU0Xigef_6Jx5CCjtF/view" target="_blank" rel="noopener"><span class="play"></span><small>Brand film</small><h3>Product reveal</h3></a><a class="tile  " data-cat="event" href="https://drive.google.com/file/d/1KgsRqthoQ2VZt_L2ZndA5f5E4TaeqqWp/view" target="_blank" rel="noopener"><span class="play"></span><small>Event coverage</small><h3>Live show aftermovie</h3></a><a class="tile  tall" data-cat="social" href="https://drive.google.com/file/d/1gE_sd7MqbjtxYfYLMcuwC0BeyLHm4QsU/view" target="_blank" rel="noopener"><span class="play"></span><small>Social cut</small><h3>Campaign teaser</h3></a></div>
+</div></section>
+<script>
+document.querySelectorAll('.filters button').forEach(function(b){b.addEventListener('click',function(){
+document.querySelectorAll('.filters button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});
+document.querySelectorAll('.tile').forEach(function(t){t.hidden=b.dataset.f!=='all'&&t.dataset.cat!==b.dataset.f});})});
+</script>
+
+<section id="work"><div class="wrap">
+<h2>Selected work</h2>
+<p class="lede">Brand, production and talent work across Lagos.</p>
+<div class="work">
+<div class="job"><div class="tag">Creative production and social strategy</div><div><h3>Hamthel Holdings</h3><p>Content and marketing for a Lagos conglomerate spanning smart home products, textiles, real estate, renewable energy and luxury paints. One parent brand, five audiences, each with its own voice.</p><div class="chips"><span>Social strategy</span><span>Brand content</span><span>Multi-vertical campaigns</span></div></div></div>
+<div class="job"><div class="tag">Founder and director</div><div><h3>FettyEffect</h3><p>My video production brand: event and DJ coverage, brand films and social content for clients who want their night, launch or product to travel beyond the room.</p><div class="chips"><span>Brand films</span><span>Event coverage</span><span>Editing and color</span></div></div></div>
+<div class="job"><div class="tag">Talent management</div><div><h3>Chode X</h3><p>Managing an underground artist: positioning the sound, shaping the visual identity and building an audience from the scene up.</p><div class="chips"><span>Artist branding</span><span>Release content</span><span>Audience growth</span></div></div></div>
+</div>
+</div></section>
+
+<section id="roles"><div class="wrap">
+<h2>Experience</h2>
+<ul class="roles" style="margin-top:32px">
+<li><b>Creative Director</b><span>FettyEffect. Lead concept, direction and post-production on brand films, events and social campaigns.</span></li>
+<li><b>Creative Production and Social Content Strategy</b><span>Hamthel Holdings. Plan and produce content across the group's five business lines.</span></li>
+<li><b>Talent Manager</b><span>Chode X. Direct brand, content and release strategy for an underground artist.</span></li>
+</ul>
+</div></section>
+
+<section><div class="wrap">
+<h2>What I bring</h2>
+<div class="skills" style="margin-top:32px">
+<div><h3>Creative</h3><ul><li>Campaign concepting</li><li>Copy and scriptwriting</li><li>Art and film direction</li></ul></div>
+<div><h3>Production</h3><ul><li>Shoot planning and direction</li><li>Editing and color grading</li><li>Live event coverage</li></ul></div>
+<div><h3>Strategy</h3><ul><li>Social content strategy</li><li>Paid and organic distribution</li><li>Local and B2B audience planning</li></ul></div>
+</div>
+</div></section>
+
+<section class="contact" id="contact"><div class="wrap">
+<h2>Have a brand that needs to be seen?</h2>
+<a class="btn" href="mailto:davetrellz@gmail.com">Email Fetty</a>
+</div></section>
+</main>
+<footer><div class="wrap">Fetty | FettyEffect | Lagos, Nigeria</div></footer>
+</body>
+</html>
