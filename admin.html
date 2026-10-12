@@ -34,7 +34,15 @@ header button{background:#10202A;color:#FAFAF7}
 .form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
 .form label{display:grid;gap:4px;font-weight:600;font-size:.9rem}
 .form .full{grid-column:1/-1}
-.login{max-width:380px;margin:12vh auto;display:grid;gap:12px}
+.login{max-width:400px;margin:10vh auto}
+.stack{display:grid;gap:12px}
+.stack label{display:grid;gap:4px;font-weight:600;font-size:.9rem}
+button.link{background:none;color:var(--lag);padding:0;border-radius:0;text-align:left;font-weight:600;text-decoration:underline}
+button[disabled]{opacity:.6;cursor:wait}
+.hint{color:var(--mute);margin:0}
+.ok{color:var(--lag);font-weight:600;margin:0;min-height:0}
+.ok:empty,.err:empty{display:none}
+#who{font-weight:600;font-size:.9rem}
 .err{color:#C0392B;font-weight:600;min-height:1.5em;margin:0}
 .empty{color:var(--mute)}
 [hidden]{display:none!important}
@@ -42,15 +50,44 @@ header button{background:#10202A;color:#FAFAF7}
 </style>
 </head>
 <body>
-<form class="login wrap" id="login">
-<h1>Admin</h1>
-<label>Password<input type="password" id="pw" autocomplete="current-password" required></label>
+<main class="login wrap" id="auth" hidden>
+<h1>Fetty admin</h1>
+<p class="ok" id="authMsg" role="status"></p>
+<p class="err" id="authErr" role="alert"></p>
+
+<form id="signin" class="stack">
+<label>Email<input type="email" name="email" autocomplete="email" required></label>
+<label>Password<input type="password" name="password" autocomplete="current-password" required></label>
 <button type="submit">Sign in</button>
-<p class="err" id="loginErr" role="alert"></p>
+<button type="button" class="link" data-show="forgot">Forgot password?</button>
+<button type="button" class="link" data-show="signup" id="toSignup" hidden>No account yet? Create the admin account</button>
 </form>
 
+<form id="signup" class="stack" hidden>
+<p class="hint">This creates the site's only admin account. Once it exists, nobody else can sign up.</p>
+<label>Your name<input name="name" autocomplete="name" required maxlength="120"></label>
+<label>Email<input type="email" name="email" autocomplete="email" required></label>
+<label>Password (at least 8 characters)<input type="password" name="password" autocomplete="new-password" required minlength="8"></label>
+<button type="submit">Create admin account</button>
+<button type="button" class="link" data-show="signin">Already have an account? Sign in</button>
+</form>
+
+<form id="forgot" class="stack" hidden>
+<label>Email<input type="email" name="email" autocomplete="email" required></label>
+<button type="submit">Send reset link</button>
+<button type="button" class="link" data-show="signin">Back to sign in</button>
+</form>
+
+<form id="reset" class="stack" hidden>
+<label>New password (at least 8 characters)<input type="password" name="password" autocomplete="new-password" required minlength="8"></label>
+<button type="submit">Save new password</button>
+</form>
+</main>
+
+<p class="wrap empty" id="loading">Loading…</p>
+
 <div id="app" hidden>
-<header><div class="wrap"><h1>Fetty admin</h1><button id="logout">Sign out</button></div></header>
+<header><div class="wrap"><h1>Fetty admin</h1><div class="row" style="margin:0"><span id="who"></span><button id="logout">Sign out</button></div></div></header>
 <div class="wrap">
 <div class="tabs" role="group" aria-label="Section"><button aria-pressed="true" data-tab="inq">Enquiries</button><button aria-pressed="false" data-tab="reel">Reel</button></div>
 <p class="err" id="err" role="alert"></p>
@@ -77,32 +114,77 @@ header button{background:#10202A;color:#FAFAF7}
 </div>
 </div>
 
-<script>
-(function(){
-var pw=sessionStorage.getItem('adminPw')||'';
+<script type="module">
+import { login, logout, signup, getUser, handleAuthCallback, requestPasswordRecovery, updateUser, AuthError, MissingIdentityError } from 'https://esm.sh/@netlify/identity@2.0.0';
+
 var $=function(id){return document.getElementById(id)};
 var inquiries=[];
+var forms=['signin','signup','forgot','reset'];
+var hasAdmin=true;
+
+function showForm(name){forms.forEach(function(f){$(f).hidden=f!==name});$('authErr').textContent=''}
+function showAuth(form,msg){$('loading').hidden=true;$('app').hidden=true;$('auth').hidden=false;showForm(form||(hasAdmin?'signin':'signup'));$('authMsg').textContent=msg||''}
+function showApp(user){$('loading').hidden=true;$('auth').hidden=true;$('app').hidden=false;$('who').textContent=user.email||'';$('err').textContent='';loadInq();loadReel()}
+function authError(e){
+if(e instanceof MissingIdentityError)return 'Accounts are not switched on for this site yet.';
+if(e instanceof AuthError){
+if(e.status===401)return 'Invalid email or password, or your email is not confirmed yet.';
+if(e.status===403)return 'Sign up is closed. An admin account already exists.';
+if(e.status===422)return 'Check your email and password (at least 8 characters).';
+}
+return (e&&e.message)||'Something went wrong. Please try again.';
+}
+function busy(form,on){form.querySelectorAll('button[type="submit"]').forEach(function(b){b.disabled=on})}
+
+document.querySelectorAll('[data-show]').forEach(function(b){b.addEventListener('click',function(){showForm(b.dataset.show);$('authMsg').textContent=''})});
+
+async function enter(user){
+if(user&&user.roles&&user.roles.includes('admin'))return showApp(user);
+if(user){await logout().catch(function(){});showAuth('signin');$('authErr').textContent='This account does not have admin access.';return}
+showAuth();
+}
+
+$('signin').addEventListener('submit',async function(e){
+e.preventDefault();var f=e.target,d=Object.fromEntries(new FormData(f));busy(f,true);$('authErr').textContent='';
+try{var user=await login(d.email.trim(),d.password);
+if(!(user.roles||[]).includes('admin')){await logout().catch(function(){});$('authErr').textContent='This account does not have admin access.';return}
+f.reset();showApp(user);
+}catch(err){$('authErr').textContent=authError(err)}finally{busy(f,false)}
+});
+
+$('signup').addEventListener('submit',async function(e){
+e.preventDefault();var f=e.target,d=Object.fromEntries(new FormData(f));busy(f,true);$('authErr').textContent='';
+try{var user=await signup(d.email.trim(),d.password,{full_name:d.name.trim()});f.reset();
+if(user.emailVerified){var fresh=await getUser();return enter(fresh||user)}
+showAuth('signin','Almost done. We sent a confirmation link to '+d.email.trim()+'. Click it to activate your admin account.');
+hasAdmin=true;$('toSignup').hidden=true;
+}catch(err){$('authErr').textContent=authError(err)}finally{busy(f,false)}
+});
+
+$('forgot').addEventListener('submit',async function(e){
+e.preventDefault();var f=e.target,d=Object.fromEntries(new FormData(f));busy(f,true);
+try{await requestPasswordRecovery(d.email.trim());f.reset();showAuth('signin','If that email has an account, a reset link is on its way.')}
+catch(err){$('authErr').textContent=authError(err)}finally{busy(f,false)}
+});
+
+$('reset').addEventListener('submit',async function(e){
+e.preventDefault();var f=e.target,d=Object.fromEntries(new FormData(f));busy(f,true);
+try{await updateUser({password:d.password});f.reset();enter(await getUser())}
+catch(err){$('authErr').textContent=authError(err)}finally{busy(f,false)}
+});
+
+$('logout').addEventListener('click',async function(){await logout().catch(function(){});showAuth('signin','You are signed out.')});
 
 function api(path,opts){
-opts=opts||{};
-opts.headers=Object.assign({'Authorization':'Bearer '+pw},opts.body?{'Content-Type':'application/json'}:{});
+opts=Object.assign({credentials:'same-origin'},opts||{});
+if(opts.body)opts.headers={'Content-Type':'application/json'};
 return fetch('/api/admin/'+path,opts).then(function(r){
 if(r.status===204)return null;
 return r.json().then(function(j){if(!r.ok){var e=new Error(j.error||'Request failed');e.status=r.status;throw e}return j});
 });
 }
 function el(tag,props,kids){var n=document.createElement(tag);Object.assign(n,props||{});(kids||[]).forEach(function(k){n.append(k)});return n}
-function fail(e){if(e.status===401){logout();$('loginErr').textContent='Wrong password.';return}$('err').textContent=e.message}
-
-function showApp(){$('login').hidden=true;$('app').hidden=false;loadInq();loadReel()}
-function logout(){sessionStorage.removeItem('adminPw');pw='';$('app').hidden=true;$('login').hidden=false}
-
-$('login').addEventListener('submit',function(e){
-e.preventDefault();pw=$('pw').value;$('loginErr').textContent='';
-api('inquiries').then(function(rows){sessionStorage.setItem('adminPw',pw);inquiries=rows;$('login').hidden=true;$('app').hidden=false;renderInq();loadReel()})
-.catch(function(e){$('loginErr').textContent=e.status===401?'Wrong password.':e.message});
-});
-$('logout').addEventListener('click',logout);
+function fail(e){if(e.status===401||e.status===403){showAuth('signin','');$('authErr').textContent=e.message;return}$('err').textContent=e.message}
 
 document.querySelectorAll('.tabs button').forEach(function(b){b.addEventListener('click',function(){
 document.querySelectorAll('.tabs button').forEach(function(x){x.setAttribute('aria-pressed',x===b);$(x.dataset.tab).hidden=x!==b});
@@ -117,6 +199,7 @@ var list=$('inqList');list.replaceChildren();
 if(!rows.length){list.append(el('p',{className:'empty',textContent:'No enquiries here yet.'}));return}
 rows.forEach(function(r){
 var status=el('select',{},['new','replied','archived'].map(function(s){return el('option',{value:s,textContent:s,selected:s===r.status})}));
+status.setAttribute('aria-label','Status');
 status.addEventListener('change',function(){api('inquiries/'+r.id,{method:'PATCH',body:JSON.stringify({status:status.value})}).then(function(u){Object.assign(r,u);renderInq()}).catch(fail)});
 var del=el('button',{className:'danger',textContent:'Delete'});
 del.addEventListener('click',function(){if(confirm('Delete this enquiry for good?'))api('inquiries/'+r.id,{method:'DELETE'}).then(loadInq).catch(fail)});
@@ -136,7 +219,7 @@ if(!rows.length){list.append(el('p',{className:'empty',textContent:'The reel is 
 rows.forEach(function(r){
 var toggle=el('button',{className:'ghost',textContent:r.published?'Hide from site':'Show on site'});
 toggle.addEventListener('click',function(){api('reel/'+r.id,{method:'PATCH',body:JSON.stringify({published:!r.published})}).then(loadReel).catch(fail)});
-var order=el('input',{type:'number',value:r.sortOrder,style:'width:90px','aria-label':'Position'});
+var order=el('input',{type:'number',value:r.sortOrder,style:'width:90px'});
 order.setAttribute('aria-label','Position');
 order.addEventListener('change',function(){api('reel/'+r.id,{method:'PATCH',body:JSON.stringify({sortOrder:Number(order.value)})}).then(loadReel).catch(fail)});
 var del=el('button',{className:'danger',textContent:'Delete'});
@@ -153,7 +236,18 @@ e.preventDefault();var form=e.target;var d=Object.fromEntries(new FormData(form)
 api('reel',{method:'POST',body:JSON.stringify(d)}).then(function(){form.reset();$('err').textContent='';loadReel()}).catch(fail);
 });
 
-if(pw)showApp();
+// Startup: handle email links (confirm / reset password), then decide what to show
+(async function(){
+fetch('/api/admin-status').then(function(r){return r.json()}).then(function(s){hasAdmin=!!s.hasAdmin;$('toSignup').hidden=hasAdmin;if(!hasAdmin&&!$('auth').hidden&&!$('authMsg').textContent&&!$('signin').hidden)showForm('signup')}).catch(function(){});
+try{
+var cb=await handleAuthCallback();
+if(cb&&cb.type==='recovery'){showAuth('reset','Choose a new password.');return}
+if(cb&&cb.type==='confirmation'){
+if(cb.user&&(cb.user.roles||[]).includes('admin'))return showApp(cb.user);
+return showAuth('signin','Email confirmed. Sign in to continue.');
+}
+}catch(err){showAuth('signin');$('authErr').textContent=authError(err);return}
+enter(await getUser());
 })();
 </script>
 </body>

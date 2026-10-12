@@ -1,6 +1,6 @@
 import type { Config, Context } from "@netlify/functions";
 import { asc, desc, eq } from "drizzle-orm";
-import { createHash, timingSafeEqual } from "node:crypto";
+import { getUser, verifyRequestOrigin } from "@netlify/identity";
 import { db } from "../../db/index.js";
 import { inquiries, reelItems } from "../../db/schema.js";
 
@@ -8,24 +8,21 @@ const CATEGORIES = ["film", "event", "social", "artist"];
 const LAYOUTS = ["", "b", "c", "tall", "b tall", "c tall"];
 const STATUSES = ["new", "replied", "archived"];
 
-function authorized(req: Request) {
-  const expected = Netlify.env.get("ADMIN_PASSWORD");
-  if (!expected) return false;
-  const given = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
-  const a = createHash("sha256").update(given).digest();
-  const b = createHash("sha256").update(expected).digest();
-  return timingSafeEqual(a, b);
-}
-
 function str(value: unknown, max: number) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
 }
 
 export default async (req: Request, context: Context) => {
-  if (!Netlify.env.get("ADMIN_PASSWORD")) {
-    return Response.json({ error: "Admin is disabled. Set ADMIN_PASSWORD in Netlify." }, { status: 503 });
+  const user = await getUser();
+  if (!user) return Response.json({ error: "Please sign in" }, { status: 401 });
+  if (!user.roles?.includes("admin")) return Response.json({ error: "This account is not an admin" }, { status: 403 });
+  if (req.method !== "GET") {
+    try {
+      verifyRequestOrigin(req);
+    } catch {
+      return Response.json({ error: "Bad origin" }, { status: 403 });
+    }
   }
-  if (!authorized(req)) return Response.json({ error: "Wrong password" }, { status: 401 });
 
   const { resource, id } = context.params;
   const rowId = id ? Number(id) : null;

@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Fetty | Digital Creative Director, Lagos</title>
+<script>
+// Account emails (confirm, password reset) link to the homepage; send them on to the admin page
+if(/(confirmation|recovery|invite|email_change)_token=/.test(location.hash))location.replace('/admin'+location.hash);
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#FAFAF7;--ink:#10202A;--mute:#4E5D66;--line:#D5DBDD;--acc:#FFC21A;--acc-ink:#10202A;--lag:#0E5C63;--panel:#EEF1F0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}

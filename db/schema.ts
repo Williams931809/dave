@@ -1,4 +1,5 @@
-import { pgTable, serial, text, timestamp, integer, boolean } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { pgTable, serial, text, timestamp, integer, boolean, check } from "drizzle-orm/pg-core";
 
 export const inquiries = pgTable("inquiries", {
   id: serial().primaryKey(),
@@ -23,3 +24,15 @@ export const reelItems = pgTable("reel_items", {
   published: boolean().notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// Single row: the first account that signs up becomes the site admin
+export const adminAccount = pgTable(
+  "admin_account",
+  {
+    id: integer().primaryKey().default(1),
+    userId: text("user_id").notNull(),
+    email: text().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [check("admin_account_single_row", sql`${t.id} = 1`)],
+);
