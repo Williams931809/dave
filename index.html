@@ -156,9 +156,7 @@ document.querySelectorAll('.tile').forEach(function(t){t.hidden=b.dataset.f!=='a
 <dialog class="work-preview" id="work-preview" aria-labelledby="preview-title">
 <div id="preview-content"></div>
 </dialog>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script src="supabase-config.js"></script>
-<script src="supabase-client.js"></script>
+<script src="backend.js"></script>
 <script>
 const workGrid = document.querySelector('.grid');
 const preview = document.querySelector('#work-preview');
@@ -187,20 +185,14 @@ function makeElement(tag, className, text) {
 }
 
 async function renderUploadedWork() {
-	const client = window.portfolioClient;
-	if (!client) return;
-	const result = await client.from('portfolio_work')
-		.select('id,title,category,description,file_path,media_type')
-		.eq('published', true)
-		.order('created_at', {ascending: false});
-	if (result.error) {
-		console.error('Could not load published work.', result.error.message);
-		return;
-	}
+	const client = window.portfolioAPI;
+	let result;
+	try { result = await client.request('work'); }
+	catch (error) { console.error('Could not load published work.', error.message); return; }
 	uploadedItems.clear();
 	workGrid.querySelectorAll('.uploaded-tile').forEach(function(tile) { tile.remove(); });
 	result.data.forEach(function(item) {
-		const publicUrl = client.storage.from('portfolio-work').getPublicUrl(item.file_path).data.publicUrl;
+		const publicUrl = client.url('media/'+item.id);
 		uploadedItems.set(item.id, {item, publicUrl});
 		const tile = makeElement('button', 'tile uploaded-tile', '');
 		tile.type = 'button';
