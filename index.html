@@ -113,12 +113,6 @@ dialog.work-preview::backdrop{background:rgba(4,12,16,.82)}
 <div class="filters" role="group" aria-label="Filter by type"><button aria-pressed="true" data-f="all">All</button><button aria-pressed="false" data-f="film">Brand films</button><button aria-pressed="false" data-f="event">Events</button><button aria-pressed="false" data-f="social">Social</button><button aria-pressed="false" data-f="artist">Artists</button></div></div>
 <div class="grid"><a class="tile  " data-cat="film" href="https://drive.google.com/file/d/1aUel64qgRCK1MkJuiI-iAvJ4pSbfDrpU/view" target="_blank" rel="noopener"><span class="play"></span><small>Brand film</small><h3>Brand film</h3></a><a class="tile b " data-cat="event" href="https://drive.google.com/file/d/1_NkvGOU990YId1OZ5enVp0liA9dp_Jfq/view" target="_blank" rel="noopener"><span class="play"></span><small>Event coverage</small><h3>DJ night highlight reel</h3></a><a class="tile c tall" data-cat="social" href="https://drive.google.com/file/d/1NGngszJD6vOvHj4_CpVXQbg7YhnVwIQ2/view" target="_blank" rel="noopener"><span class="play"></span><small>Social cut</small><h3>Verticals for Reels and TikTok</h3></a><a class="tile b " data-cat="artist" href="https://drive.google.com/file/d/1yK5peA8_mXmm06SCKrzXAWi2buI6kLNa/view" target="_blank" rel="noopener"><span class="play"></span><small>Artist visual</small><h3>Chode X performance visual</h3></a><a class="tile c " data-cat="film" href="https://drive.google.com/file/d/1iwDRqyoLtzWOEbfU0Xigef_6Jx5CCjtF/view" target="_blank" rel="noopener"><span class="play"></span><small>Brand film</small><h3>Product reveal</h3></a><a class="tile  " data-cat="event" href="https://drive.google.com/file/d/1KgsRqthoQ2VZt_L2ZndA5f5E4TaeqqWp/view" target="_blank" rel="noopener"><span class="play"></span><small>Event coverage</small><h3>Live show aftermovie</h3></a><a class="tile  tall" data-cat="social" href="https://drive.google.com/file/d/1gE_sd7MqbjtxYfYLMcuwC0BeyLHm4QsU/view" target="_blank" rel="noopener"><span class="play"></span><small>Social cut</small><h3>Campaign teaser</h3></a></div>
 </div></section>
-<script>
-document.querySelectorAll('.filters button').forEach(function(b){b.addEventListener('click',function(){
-document.querySelectorAll('.filters button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});
-document.querySelectorAll('.tile').forEach(function(t){t.hidden=b.dataset.f!=='all'&&t.dataset.cat!==b.dataset.f});})});
-</script>
-
 <section id="work"><div class="wrap">
 <h2>Selected work</h2>
 <p class="lede">Brand, production and talent work across Lagos.</p>
@@ -157,110 +151,7 @@ document.querySelectorAll('.tile').forEach(function(t){t.hidden=b.dataset.f!=='a
 <div id="preview-content"></div>
 </dialog>
 <script src="backend.js"></script>
-<script>
-const workGrid = document.querySelector('.grid');
-const preview = document.querySelector('#work-preview');
-const previewContent = document.querySelector('#preview-content');
-let activeFilter = 'all';
-const uploadedItems = new Map();
-const categories = {film:'Brand film',event:'Event coverage',social:'Social cut',artist:'Artist visual'};
-
-document.querySelectorAll('.filters button').forEach(function(button) {
-	button.addEventListener('click', function() {
-		activeFilter = button.dataset.f;
-		document.querySelectorAll('.filters button').forEach(function(filterButton) {
-			filterButton.setAttribute('aria-pressed', String(filterButton === button));
-		});
-		document.querySelectorAll('.tile').forEach(function(tile) {
-			tile.hidden = activeFilter !== 'all' && tile.dataset.cat !== activeFilter;
-		});
-	});
-});
-
-function makeElement(tag, className, text) {
-	const element = document.createElement(tag);
-	if (className) element.className = className;
-	if (text) element.textContent = text;
-	return element;
-}
-
-async function renderUploadedWork() {
-	const client = window.portfolioAPI;
-	let result;
-	try { result = await client.request('work'); }
-	catch (error) { console.error('Could not load published work.', error.message); return; }
-	uploadedItems.clear();
-	workGrid.querySelectorAll('.uploaded-tile').forEach(function(tile) { tile.remove(); });
-	result.data.forEach(function(item) {
-		const publicUrl = client.url('media/'+item.id);
-		uploadedItems.set(item.id, {item, publicUrl});
-		const tile = makeElement('button', 'tile uploaded-tile', '');
-		tile.type = 'button';
-		tile.dataset.cat = item.category;
-		tile.dataset.id = item.id;
-		tile.hidden = activeFilter !== 'all' && item.category !== activeFilter;
-		const media = document.createElement(item.media_type.startsWith('video/') ? 'video' : 'img');
-		media.src = publicUrl;
-		if (media.tagName === 'VIDEO') {
-			media.muted = true;
-			media.playsInline = true;
-			media.preload = 'metadata';
-		} else {
-			media.alt = '';
-		}
-		tile.append(media, makeElement('span', 'play', ''), makeElement('small', '', categories[item.category]));
-		tile.append(makeElement('h3', '', item.title));
-		workGrid.append(tile);
-	});
-}
-
-workGrid.addEventListener('click', function(event) {
-	const uploadedTile = event.target.closest('.uploaded-tile');
-	const driveTile = event.target.closest('a.tile[href*="drive.google.com/file/d/"]');
-	if (!uploadedTile && !driveTile) return;
-	if (driveTile) event.preventDefault();
-	const uploaded = uploadedTile && uploadedItems.get(uploadedTile.dataset.id);
-	const item = uploaded && uploaded.item;
-	const title = item ? item.title : driveTile.querySelector('h3').textContent;
-	const description = item ? item.description : '';
-	const url = item
-		? uploaded.publicUrl
-		: `https://drive.google.com/file/d/${driveTile.href.split('/file/d/')[1].split('/')[0]}/preview`;
-	const isVideo = item ? item.media_type.startsWith('video/') : true;
-	previewContent.replaceChildren();
-	const media = document.createElement(item ? (isVideo ? 'video' : 'img') : 'iframe');
-	media.className = item ? 'preview-media' : 'preview-frame';
-	media.src = url;
-	if (media.tagName === 'VIDEO') {
-		media.controls = true;
-		media.autoplay = true;
-		media.playsInline = true;
-	} else if (media.tagName === 'IMG') {
-		media.alt = title;
-	} else {
-		media.title = title;
-		media.allow = 'autoplay; picture-in-picture';
-		media.allowFullscreen = true;
-		media.referrerPolicy = 'no-referrer';
-	}
-	const copy = makeElement('div', 'preview-copy', '');
-	const details = makeElement('div', '', '');
-	details.append(makeElement('h3', '', title));
-	details.firstChild.id = 'preview-title';
-	if (description) details.append(makeElement('p', '', description));
-	const close = makeElement('button', 'preview-close', 'Close');
-	close.type = 'button';
-	close.addEventListener('click', function() { preview.close(); });
-	copy.append(details, close);
-	previewContent.append(media, copy);
-	preview.showModal();
-});
-
-preview.addEventListener('click', function(event) {
-	if (event.target === preview) preview.close();
-});
-preview.addEventListener('close', function() { previewContent.replaceChildren(); });
-renderUploadedWork();
-</script>
+<script src="content-utils.js"></script>
+<script src="public.js"></script>
 </body>
 </html>

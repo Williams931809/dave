@@ -2,7 +2,7 @@
 export default {
  async fetch(request) {
   const url=new URL(request.url),path=url.searchParams.get('path')||'';
-  const allowed=/^(health|login|logout|session|work(?:\/[a-f0-9-]{36})?|media\/[a-f0-9-]{36}|uploads(?:\/[a-f0-9-]{36}(?:\/(?:\d+|complete))?)?)$/;
+  const allowed=/^(health|content|login|logout|session|work(?:\/[a-f0-9-]{36})?|media\/[a-f0-9-]{36}|uploads(?:\/[a-f0-9-]{36}(?:\/(?:\d+|complete))?)?)$/;
   const fail=(message,status)=>Response.json({error:message},{status,headers:{'Cache-Control':'no-store'}});
   if(!allowed.test(path))return fail('Not found',404);
   if(!['GET','HEAD','POST','PUT','DELETE'].includes(request.method))return fail('Method not allowed',405);
