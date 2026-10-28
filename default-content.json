@@ -1,0 +1,288 @@
+{
+  "meta": {
+    "title": "Fetty | Digital Creative Director, Lagos",
+    "description": "Digital creative director in Lagos. I take an idea from the pitch to the shoot to the feed, and make it sell."
+  },
+  "brand": {
+    "name": "FettyEffect"
+  },
+  "navigation": [
+    {
+      "label": "Reel",
+      "href": "#reel"
+    },
+    {
+      "label": "Approach",
+      "href": "#arc"
+    },
+    {
+      "label": "Work",
+      "href": "#work"
+    },
+    {
+      "label": "Experience",
+      "href": "#roles"
+    },
+    {
+      "label": "Contact",
+      "href": "#contact"
+    }
+  ],
+  "hero": {
+    "heading": "Fetty",
+    "description": "Digital creative director in Lagos. I take an idea from the pitch to the shoot to the feed, and make it sell.",
+    "buttonLabel": "Watch the reel",
+    "buttonHref": "#reel"
+  },
+  "approach": {
+    "heading": "One idea, three stages of ownership",
+    "intro": "Most brands split concept, production and distribution across three teams that never meet. I hold all three, so the idea that wins the pitch is the one that ships and performs.",
+    "items": [
+      {
+        "eyebrow": "Stage 1",
+        "title": "Advertising",
+        "description": "Brand positioning, campaign concepts and scripts rooted in how Lagos actually talks, buys and shares."
+      },
+      {
+        "eyebrow": "Stage 2",
+        "title": "Campaign production",
+        "description": "Brand films, event coverage and social-first shoots, directed and edited under one roof."
+      },
+      {
+        "eyebrow": "Stage 3",
+        "title": "Digital strategy",
+        "description": "Content calendars, paid and organic distribution, built for local buyers and international or B2B audiences at once."
+      }
+    ]
+  },
+  "reel": {
+    "heading": "The reel",
+    "intro": "Films, event coverage and social cuts. Tap any tile to watch.",
+    "filters": {
+      "all": "All",
+      "film": "Brand films",
+      "event": "Events",
+      "social": "Social",
+      "artist": "Artists"
+    },
+    "projects": [
+      {
+        "id": "original-1",
+        "title": "Brand film",
+        "category": "film",
+        "description": "",
+        "layout": "landscape",
+        "published": true,
+        "source": {
+          "kind": "drive",
+          "url": "https://drive.google.com/file/d/1aUel64qgRCK1MkJuiI-iAvJ4pSbfDrpU/view",
+          "assetId": ""
+        },
+        "thumbnail": {
+          "url": "https://drive.google.com/thumbnail?id=1aUel64qgRCK1MkJuiI-iAvJ4pSbfDrpU&sz=w1000",
+          "assetId": ""
+        },
+        "alt": "Brand film"
+      },
+      {
+        "id": "original-2",
+        "title": "DJ night highlight reel",
+        "category": "event",
+        "description": "",
+        "layout": "landscape",
+        "published": true,
+        "source": {
+          "kind": "drive",
+          "url": "https://drive.google.com/file/d/1_NkvGOU990YId1OZ5enVp0liA9dp_Jfq/view",
+          "assetId": ""
+        },
+        "thumbnail": {
+          "url": "https://drive.google.com/thumbnail?id=1_NkvGOU990YId1OZ5enVp0liA9dp_Jfq&sz=w1000",
+          "assetId": ""
+        },
+        "alt": "DJ night highlight reel"
+      },
+      {
+        "id": "original-3",
+        "title": "Verticals for Reels and TikTok",
+        "category": "social",
+        "description": "",
+        "layout": "portrait",
+        "published": true,
+        "source": {
+          "kind": "drive",
+          "url": "https://drive.google.com/file/d/1NGngszJD6vOvHj4_CpVXQbg7YhnVwIQ2/view",
+          "assetId": ""
+        },
+        "thumbnail": {
+          "url": "https://drive.google.com/thumbnail?id=1NGngszJD6vOvHj4_CpVXQbg7YhnVwIQ2&sz=w1000",
+          "assetId": ""
+        },
+        "alt": "Verticals for Reels and TikTok"
+      },
+      {
+        "id": "original-4",
+        "title": "Chode X performance visual",
+        "category": "artist",
+        "description": "",
+        "layout": "landscape",
+        "published": true,
+        "source": {
+          "kind": "drive",
+          "url": "https://drive.google.com/file/d/1yK5peA8_mXmm06SCKrzXAWi2buI6kLNa/view",
+          "assetId": ""
+        },
+        "thumbnail": {
+          "url": "https://drive.google.com/thumbnail?id=1yK5peA8_mXmm06SCKrzXAWi2buI6kLNa&sz=w1000",
+          "assetId": ""
+        },
+        "alt": "Chode X performance visual"
+      },
+      {
+        "id": "original-5",
+        "title": "Product reveal",
+        "category": "film",
+        "description": "",
+        "layout": "landscape",
+        "published": true,
+        "source": {
+          "kind": "drive",
+          "url": "https://drive.google.com/file/d/1iwDRqyoLtzWOEbfU0Xigef_6Jx5CCjtF/view",
+          "assetId": ""
+        },
+        "thumbnail": {
+          "url": "https://drive.google.com/thumbnail?id=1iwDRqyoLtzWOEbfU0Xigef_6Jx5CCjtF&sz=w1000",
+          "assetId": ""
+        },
+        "alt": "Product reveal"
+      },
+      {
+        "id": "original-6",
+        "title": "Live show aftermovie",
+        "category": "event",
+        "description": "",
+        "layout": "landscape",
+        "published": true,
+        "source": {
+          "kind": "drive",
+          "url": "https://drive.google.com/file/d/1KgsRqthoQ2VZt_L2ZndA5f5E4TaeqqWp/view",
+          "assetId": ""
+        },
+        "thumbnail": {
+          "url": "https://drive.google.com/thumbnail?id=1KgsRqthoQ2VZt_L2ZndA5f5E4TaeqqWp&sz=w1000",
+          "assetId": ""
+        },
+        "alt": "Live show aftermovie"
+      },
+      {
+        "id": "original-7",
+        "title": "Campaign teaser",
+        "category": "social",
+        "description": "",
+        "layout": "portrait",
+        "published": true,
+        "source": {
+          "kind": "drive",
+          "url": "https://drive.google.com/file/d/1gE_sd7MqbjtxYfYLMcuwC0BeyLHm4QsU/view",
+          "assetId": ""
+        },
+        "thumbnail": {
+          "url": "https://drive.google.com/thumbnail?id=1gE_sd7MqbjtxYfYLMcuwC0BeyLHm4QsU&sz=w1000",
+          "assetId": ""
+        },
+        "alt": "Campaign teaser"
+      }
+    ]
+  },
+  "work": {
+    "heading": "Selected work",
+    "intro": "Brand, production and talent work across Lagos.",
+    "items": [
+      {
+        "tag": "Creative production and social strategy",
+        "title": "Hamthel Holdings",
+        "description": "Content and marketing for a Lagos conglomerate spanning smart home products, textiles, real estate, renewable energy and luxury paints. One parent brand, five audiences, each with its own voice.",
+        "chips": [
+          "Social strategy",
+          "Brand content",
+          "Multi-vertical campaigns"
+        ]
+      },
+      {
+        "tag": "Founder and director",
+        "title": "FettyEffect",
+        "description": "My video production brand: event and DJ coverage, brand films and social content for clients who want their night, launch or product to travel beyond the room.",
+        "chips": [
+          "Brand films",
+          "Event coverage",
+          "Editing and color"
+        ]
+      },
+      {
+        "tag": "Talent management",
+        "title": "Chode X",
+        "description": "Managing an underground artist: positioning the sound, shaping the visual identity and building an audience from the scene up.",
+        "chips": [
+          "Artist branding",
+          "Release content",
+          "Audience growth"
+        ]
+      }
+    ]
+  },
+  "experience": {
+    "heading": "Experience",
+    "items": [
+      {
+        "title": "Creative Director",
+        "description": "FettyEffect. Lead concept, direction and post-production on brand films, events and social campaigns."
+      },
+      {
+        "title": "Creative Production and Social Content Strategy",
+        "description": "Hamthel Holdings. Plan and produce content across the group's five business lines."
+      },
+      {
+        "title": "Talent Manager",
+        "description": "Chode X. Direct brand, content and release strategy for an underground artist."
+      }
+    ]
+  },
+  "skills": {
+    "heading": "What I bring",
+    "items": [
+      {
+        "title": "Creative",
+        "items": [
+          "Campaign concepting",
+          "Copy and scriptwriting",
+          "Art and film direction"
+        ]
+      },
+      {
+        "title": "Production",
+        "items": [
+          "Shoot planning and direction",
+          "Editing and color grading",
+          "Live event coverage"
+        ]
+      },
+      {
+        "title": "Strategy",
+        "items": [
+          "Social content strategy",
+          "Paid and organic distribution",
+          "Local and B2B audience planning"
+        ]
+      }
+    ]
+  },
+  "contact": {
+    "heading": "Have a brand that needs to be seen?",
+    "buttonLabel": "Email Fetty",
+    "buttonHref": "mailto:davetrellz@gmail.com"
+  },
+  "footer": {
+    "text": "Fetty | FettyEffect | Lagos, Nigeria",
+    "adminLabel": "Manage work"
+  }
+}
